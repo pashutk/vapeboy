@@ -4,7 +4,7 @@
 
 ## Run
 
-Open game.gb in Gameboy emulator. [Bgb](http://bgb.bircd.org/) is recommended.
+Open game.gb in Gameboy emulator ([Bgb](http://bgb.bircd.org/) is recommended)
 
 ## Building from source
 
@@ -16,4 +16,4 @@ To build:
 ```
 make CC=/path/to/lcc
 ```
-Where `path/to/lcc/` is path to lcc compiler from GBDK
+Where `path/to/lcc` is path to lcc tool from GBDK
