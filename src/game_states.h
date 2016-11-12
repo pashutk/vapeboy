@@ -1,7 +1,10 @@
-enum game_states {
-  TRANSITION_TO_TITLE_STATE,
+typedef enum game_states {
   TITLE_STATE,
   GAME_STATE
-};
+} Game_state_t;
 
-enum game_states current_game_state = TRANSITION_TO_TITLE_STATE;
+Game_state_t current_game_state;
+
+void run_game_loop(void);
+
+void set_current_game_state(Game_state_t);
