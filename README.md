@@ -2,9 +2,9 @@
 
 [Gameboy Original](https://en.wikipedia.org/wiki/Game_Boy) platformer game
 
-## Run
+## Running
 
-Open game.gb in Gameboy emulator ([Bgb](http://bgb.bircd.org/) is recommended)
+[Download](https://github.com/pashutk/vapeboy/raw/master/game.gb) and open ROM in Gameboy emulator ([Bgb](http://bgb.bircd.org/) is recommended)
 
 ## Building from source
 
