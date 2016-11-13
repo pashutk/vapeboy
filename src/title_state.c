@@ -1,4 +1,5 @@
 #include "game_states.h"
+#include "helpers.h"
 #include "tiledata_titlescreen.h"
 #include "title_state.h"
 #include <gb/gb.h>
@@ -40,6 +41,22 @@ void move_pressstart(UINT8 x, UINT8 y) {
   }
 }
 
+void hide_pressstart(void) {
+  move_pressstart(20, 12);
+}
+
+void flush_bkg(void) {
+  UINT8 i, j, k;
+  UINT8 tiles[MAX_SCREEN_SPRITES_HEIGHT];
+  for (i = 0; i < SCREEN_SPRITES_HEIGHT; ++i) {
+    tiles[i] = 0;
+  }
+
+  for (i = 0; i < SCREEN_SPRITES_WIDTH; ++i) {
+    set_bkg_tiles(i, 0, 1, SCREEN_SPRITES_HEIGHT, &tiles);
+  }
+}
+
 void title_state_prehook(void) {
   UINT16 i;
   UINT8 k;
@@ -76,8 +93,14 @@ void title_state_prehook(void) {
     set_sprite_tile(k, pressstart_map_data[k]);
   }
 
-  move_pressstart(20, 12);
+  hide_pressstart();
 }
+
+void title_state_posthook(void) {
+  hide_pressstart();
+  flush_bkg();
+  move_bkg(0, 0);
+} 
 
 void title_state_loop(void) {
   const UINT8 delta = 1;
@@ -96,6 +119,8 @@ void title_state_loop(void) {
 
   if (scroll_position_x == 200) {
     move_pressstart(11, 13);
+    waitpad(J_START);
+    waitpadup();
     set_current_game_state(GAME_STATE);
   }
   wait_vbl_done();

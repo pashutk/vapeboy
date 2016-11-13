@@ -1,4 +1,5 @@
 typedef enum game_states {
+  INIT,
   TITLE_STATE,
   GAME_STATE
 } Game_state_t;
