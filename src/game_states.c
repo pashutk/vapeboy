@@ -2,6 +2,7 @@
 #include "title_state.h"
 #include "game_state.h"
 #include "helpers.h"
+#include <gb/gb.h>
 #include <stdarg.h>
 #include <stdio.h>
 
@@ -36,6 +37,13 @@ void run_current_game_state_loop(void) {
   }
 }
 
+void game_common_prehook(void) {
+  SPRITES_8x8;
+  SHOW_BKG;
+  SHOW_SPRITES;
+  DISPLAY_ON;
+}
+
 // stdarg works correctly with int only
 // UINT8 add(UINT8 x, UINT8 y, ...) {
 //   UINT8 sum;
@@ -60,13 +68,8 @@ void run_current_game_state_loop(void) {
 // }
 
 void run_game_loop(void) {
-  // UINT8 res;
-  // res = add(1, 2, 3, 4, 5, 6, 7);
-  // printf("result\n");
-  // printf("%d\n", res);
-  // return;
-
-  set_current_game_state(TITLE_STATE);
+  game_common_prehook();
+  set_current_game_state(GAME_STATE);
   while(1) {
     run_current_game_state_loop();
   }

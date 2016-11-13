@@ -70,11 +70,6 @@ void title_state_prehook(void) {
 
   set_sprite_data(0, pressstart_tile_count, pressstart_tile_data);
 
-  SPRITES_8x8;
-  SHOW_BKG;
-  SHOW_SPRITES;
-  DISPLAY_ON;
-
   for(i = 0; i < t1_tile_map_size; i++) {
     tiles_t1[i] = t1_map_data[i] + 1;
   }

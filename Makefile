@@ -5,6 +5,7 @@ CC = $(CPATH) -Wa-l -Wl-m
 ROM = game.gb
 SRCS = src/game.c \
        src/helpers.c \
+       src/game_sprite_object.c \
        src/game_states.c \
        src/title_state.c \
        src/game_state.c \
