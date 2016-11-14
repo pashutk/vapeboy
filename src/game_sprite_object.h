@@ -3,7 +3,9 @@
 
 typedef enum game_sprite_object_state {
   STAY_STATE,
-  RUN_STATE
+  RUN_STATE,
+  STAYVAPE_STATE,
+  RUNVAPE_STATE
 } Game_sprite_object_state_t;
 
 typedef struct game_sprite_object_ {

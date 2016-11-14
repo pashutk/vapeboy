@@ -1,6 +1,8 @@
 #include "helpers.h"
 #include "game_sprite_object.h"
 #include "tiledata_run.h"
+#include "tiledata_stayvape.h"
+#include "tiledata_vapeboyrunvape.h"
 #include <gb/gb.h>
 #include <types.h>
 #include <stdio.h>
@@ -72,13 +74,23 @@ void draw_gso(game_sprite_object *gso,
     run_counter = 0;
   }
 
-  if (gso->state == RUN_STATE) {
+  if (gso->state == RUNVAPE_STATE) {
+    if (downtempo == 4) {
+      downtempo = 0;
+      set_sprite_data(gso->first_tile_num, 6, &vapeboyrunvape_tile_data + (0x30 * run_counter));
+      run_counter++;
+    }
+    downtempo++;
+  } else if (gso->state == RUN_STATE) {
     if (downtempo == 4) {
       downtempo = 0;
       set_sprite_data(gso->first_tile_num, 6, &vapeboyrun_tile_data + (0x30 * run_counter));
       run_counter++;
     }
     downtempo++;
+  } else if (gso->state == STAYVAPE_STATE) {
+    set_sprite_data(gso->first_tile_num, 6, &vapeboystayvape_tile_data);
+    run_counter = 7;
   } else {
     set_sprite_data(gso->first_tile_num, 6, gso->tile_data_pointer);
     run_counter = 7;

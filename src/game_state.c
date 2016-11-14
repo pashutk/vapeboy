@@ -19,18 +19,30 @@ void game_state_loop(void) {
 
   if (j & J_RIGHT) {
     set_gso_horizontal_flip(get_player_gso_pointer(), FALSE);
-    set_gso_state(get_player_gso_pointer(), RUN_STATE);
+    if (j & J_A) {
+      set_gso_state(get_player_gso_pointer(), RUNVAPE_STATE);
+    } else {
+      set_gso_state(get_player_gso_pointer(), RUN_STATE);
+    }
     delta = 1;
   } else if (j & J_LEFT) {
     set_gso_horizontal_flip(get_player_gso_pointer(), TRUE);
-    set_gso_state(get_player_gso_pointer(), RUN_STATE);
+    if (j & J_A) {
+      set_gso_state(get_player_gso_pointer(), RUNVAPE_STATE);
+    } else {
+      set_gso_state(get_player_gso_pointer(), RUN_STATE);
+    }
     delta = -1;
   } else {
-    set_gso_state(get_player_gso_pointer(), STAY_STATE);
+    if (j & J_A) {
+      set_gso_state(get_player_gso_pointer(), STAYVAPE_STATE);
+    } else {
+      set_gso_state(get_player_gso_pointer(), STAY_STATE);
+    }
     delta = 0;
   }
 
-  draw_gso(get_player_gso_pointer(), player_position_x += delta, 50);
+  draw_gso(get_player_gso_pointer(), player_position_x += delta, 64);
   wait_vbl_done();
 }
 
