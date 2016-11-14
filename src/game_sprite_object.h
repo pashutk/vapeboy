@@ -13,6 +13,7 @@ typedef struct game_sprite_object_ {
   UINT8 first_tile_num;
   UINT8 *last_free_tile_pointer;
   Game_sprite_object_state_t state;
+  BOOLEAN is_flipped;
 } game_sprite_object;
 
 void init_gso(game_sprite_object *gso);
@@ -29,6 +30,12 @@ void new_gso(game_sprite_object *gso_pointer,
 void move_gso(game_sprite_object *gso,
               UINT8              x,
               UINT8              y);
+
+void draw_gso(game_sprite_object *gso,
+              UINT8              x,
+              UINT8              y);
+
+void set_gso_horizontal_flip(game_sprite_object *gso, BOOLEAN is_flipped);
 
 /** @return previous gso state */
 Game_sprite_object_state_t set_gso_state(game_sprite_object *gso,

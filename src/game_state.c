@@ -18,9 +18,11 @@ void game_state_loop(void) {
   j = joypad();
 
   if (j & J_RIGHT) {
+    set_gso_horizontal_flip(get_player_gso_pointer(), FALSE);
     set_gso_state(get_player_gso_pointer(), RUN_STATE);
     delta = 1;
   } else if (j & J_LEFT) {
+    set_gso_horizontal_flip(get_player_gso_pointer(), TRUE);
     set_gso_state(get_player_gso_pointer(), RUN_STATE);
     delta = -1;
   } else {
@@ -28,7 +30,7 @@ void game_state_loop(void) {
     delta = 0;
   }
 
-  move_gso(get_player_gso_pointer(), player_position_x += delta, 50);
+  draw_gso(get_player_gso_pointer(), player_position_x += delta, 50);
   wait_vbl_done();
 }
 
