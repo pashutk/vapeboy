@@ -1,6 +1,6 @@
 CPATH = /opt/gbdk/bin/lcc
 
-CC = $(CPATH) -Wa-l -Wl-m
+CC = $(CPATH) -Wa-l -Wl-m -Wl-j
 
 ROM = game.gb
 SRCS = src/game.c \
@@ -17,4 +17,4 @@ $(ROM): $(SRCS)
 	$(CC) -o $(ROM) $(SRCS)
 
 clean:
-	rm *.map $(ROM)
+	rm *.map *.sym $(ROM)
