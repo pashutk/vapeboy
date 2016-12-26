@@ -14,4 +14,11 @@
 #define VA_LAST_UINT8 0
 #define VA_LAST_UINT16 515
 
+typedef enum level_block_t {
+  LEVEL_BLOCK_EMPTY = 0,
+  LEVEL_BLOCK_SOLID = 1
+} Level_block_t;
+
 UINT8 get_lcdc_reg_sprite_height(void);
+
+void render_level(UINT8 width, UINT8 height, UINT8 *data);

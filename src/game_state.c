@@ -2,6 +2,7 @@
 #include "helpers.h"
 #include "tiledata_stay.h"
 #include "game_sprite_object.h"
+#include "level_testlevel.h"
 #include <types.h>
 #include <gb/gb.h>
 
@@ -48,6 +49,11 @@ void game_state_loop(void) {
 
 void game_state_prehook(void) {
   UINT8 last_free_tile = 0;
+  
+  render_level(test_level_width,
+      test_level_height,
+      test_level_data);
+
   new_gso(get_player_gso_pointer(), stay_tile_map_width, stay_tile_map_height, &stay_tile_data, &last_free_tile);
   move_gso(get_player_gso_pointer(), 0, 50);
 }
