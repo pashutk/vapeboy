@@ -45,18 +45,6 @@ void hide_pressstart(void) {
   move_pressstart(20, 12);
 }
 
-void flush_bkg(void) {
-  UINT8 i, j, k;
-  UINT8 tiles[MAX_SCREEN_SPRITES_HEIGHT];
-  for (i = 0; i < SCREEN_SPRITES_HEIGHT; ++i) {
-    tiles[i] = 0;
-  }
-
-  for (i = 0; i < SCREEN_SPRITES_WIDTH; ++i) {
-    set_bkg_tiles(i, 0, 1, SCREEN_SPRITES_HEIGHT, &tiles);
-  }
-}
-
 void title_state_prehook(void) {
   UINT16 i;
   UINT8 k;

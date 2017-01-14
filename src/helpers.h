@@ -21,4 +21,6 @@ typedef enum level_block_t {
 
 UINT8 get_lcdc_reg_sprite_height(void);
 
+void flush_bkg(void);
+
 void render_level(UINT8 width, UINT8 height, UINT8 *data);

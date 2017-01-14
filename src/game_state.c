@@ -15,40 +15,43 @@ game_sprite_object* get_player_gso_pointer() {
 void game_state_loop(void) {
   static UINT8 player_position_x = 0;
   UINT8 j, delta = 0;
+  game_sprite_object* player_gso_pointer = get_player_gso_pointer();
 
   j = joypad();
 
   if (j & J_RIGHT) {
-    set_gso_horizontal_flip(get_player_gso_pointer(), FALSE);
+    set_gso_horizontal_flip(player_gso_pointer, FALSE);
     if (j & J_A) {
-      set_gso_state(get_player_gso_pointer(), RUNVAPE_STATE);
+      set_gso_state(player_gso_pointer, RUNVAPE_STATE);
     } else {
-      set_gso_state(get_player_gso_pointer(), RUN_STATE);
+      set_gso_state(player_gso_pointer, RUN_STATE);
     }
     delta = 1;
   } else if (j & J_LEFT) {
-    set_gso_horizontal_flip(get_player_gso_pointer(), TRUE);
+    set_gso_horizontal_flip(player_gso_pointer, TRUE);
     if (j & J_A) {
-      set_gso_state(get_player_gso_pointer(), RUNVAPE_STATE);
+      set_gso_state(player_gso_pointer, RUNVAPE_STATE);
     } else {
-      set_gso_state(get_player_gso_pointer(), RUN_STATE);
+      set_gso_state(player_gso_pointer, RUN_STATE);
     }
     delta = -1;
   } else {
     if (j & J_A) {
-      set_gso_state(get_player_gso_pointer(), STAYVAPE_STATE);
+      set_gso_state(player_gso_pointer, STAYVAPE_STATE);
     } else {
-      set_gso_state(get_player_gso_pointer(), STAY_STATE);
+      set_gso_state(player_gso_pointer, STAY_STATE);
     }
     delta = 0;
   }
 
-  draw_gso(get_player_gso_pointer(), player_position_x += delta, 64);
+  draw_gso(player_gso_pointer, player_position_x += delta, 64);
   wait_vbl_done();
 }
 
 void game_state_prehook(void) {
   UINT8 last_free_tile = 0;
+
+  flush_bkg();
   
   render_level(test_level_width,
       test_level_height,
