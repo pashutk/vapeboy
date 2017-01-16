@@ -3,6 +3,8 @@
 #include "tiledata_stay.h"
 #include "game_sprite_object.h"
 #include "level_testlevel.h"
+#include <time.h>
+#include <stdio.h>
 #include <types.h>
 #include <gb/gb.h>
 
@@ -13,9 +15,20 @@ game_sprite_object* get_player_gso_pointer() {
 }
 
 void game_state_loop(void) {
-  static UINT8 player_position_x = 0;
-  UINT8 j, delta = 0;
+  // Long static variable name causes phasing errors
+  // phase error: label location changing between passes 2 and 3
+  // So I reverted var names from 'player_position_x' to 'x_position_player'
+  static UINT8 x_position_player = 64;
+  static UINT8 y_position_player = 64;
+  static UINT16 clock_buffer = 0;
+
+  const g = 10;
+
+  UINT8 j, delta_x = 0;
+  UINT16 delta_y = 0;
   game_sprite_object* player_gso_pointer = get_player_gso_pointer();
+  clock_t current_clock = clock();
+  UINT16 s_clock_buffer = 0;
 
   j = joypad();
 
@@ -26,7 +39,7 @@ void game_state_loop(void) {
     } else {
       set_gso_state(player_gso_pointer, RUN_STATE);
     }
-    delta = 1;
+    delta_x = 1;
   } else if (j & J_LEFT) {
     set_gso_horizontal_flip(player_gso_pointer, TRUE);
     if (j & J_A) {
@@ -34,17 +47,32 @@ void game_state_loop(void) {
     } else {
       set_gso_state(player_gso_pointer, RUN_STATE);
     }
-    delta = -1;
+    delta_x = -1;
   } else {
     if (j & J_A) {
       set_gso_state(player_gso_pointer, STAYVAPE_STATE);
     } else {
       set_gso_state(player_gso_pointer, STAY_STATE);
     }
-    delta = 0;
+    delta_x = 0;
   }
 
-  draw_gso(player_gso_pointer, player_position_x += delta, 64);
+  if (j & J_B) {
+    clock_buffer = clock();
+  }
+
+  s_clock_buffer = clock() - clock_buffer;
+  y_position_player = y_position_player - 10 * s_clock_buffer + s_clock_buffer * s_clock_buffer / 200;
+
+  if (y_position_player >= 128) {
+    y_position_player = 128;
+    // delta_y = 0;
+  } else {
+    y_position_player += current_clock * current_clock / 200;
+    // delta_y = current_clock * current_clock / 200;
+  }
+
+  draw_gso(player_gso_pointer, x_position_player += delta_x, y_position_player);
   wait_vbl_done();
 }
 
