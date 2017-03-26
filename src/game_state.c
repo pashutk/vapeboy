@@ -21,6 +21,7 @@ void game_state_loop(void) {
   static UINT8 x_position_player = 64;
   static UINT8 y_position_player = 64;
   static UINT16 clock_buffer = 0;
+  BOOLEAN jump_state = FALSE;
 
   const g = 10;
 
@@ -57,18 +58,22 @@ void game_state_loop(void) {
     delta_x = 0;
   }
 
-  if (j & J_B) {
-    clock_buffer = clock();
+  if ((j & J_B) && (clock_buffer + 20 <= current_clock)) {
+    jump_state = TRUE;
+    y_position_player -= 10;
+    clock_buffer = current_clock;
   }
 
-  s_clock_buffer = clock() - clock_buffer;
-  y_position_player = y_position_player - 10 * s_clock_buffer + s_clock_buffer * s_clock_buffer / 200;
+  s_clock_buffer = current_clock - clock_buffer;
+  // if (clock_buffer + 20 <= current_clock) {
+  //   y_position_player = y_position_player - 100 * s_clock_buffer + s_clock_buffer * s_clock_buffer / 200;
+  // }
 
   if (y_position_player >= 128) {
     y_position_player = 128;
     // delta_y = 0;
   } else {
-    y_position_player += current_clock * current_clock / 200;
+    y_position_player += s_clock_buffer * s_clock_buffer / 200;
     // delta_y = current_clock * current_clock / 200;
   }
 
