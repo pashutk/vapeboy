@@ -3,6 +3,7 @@
 #include "tiledata_stay.h"
 #include "game_sprite_object.h"
 #include "level_testlevel.h"
+#include "collision_detect.h"
 #include <time.h>
 #include <stdio.h>
 #include <types.h>
@@ -13,6 +14,8 @@ game_sprite_object* get_player_gso_pointer() {
   static game_sprite_object player;
   return &player;
 }
+
+void console_log(char[]);
 
 void game_state_loop(void) {
   // Long static variable name causes phasing errors
@@ -30,6 +33,8 @@ void game_state_loop(void) {
   game_sprite_object* player_gso_pointer = get_player_gso_pointer();
   clock_t current_clock = clock();
   UINT16 s_clock_buffer = 0;
+
+  console_log("sd");
 
   j = joypad();
 
@@ -78,6 +83,7 @@ void game_state_loop(void) {
   }
 
   draw_gso(player_gso_pointer, x_position_player += delta_x, y_position_player);
+  console_log(detect_collision());
   wait_vbl_done();
 }
 

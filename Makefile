@@ -9,7 +9,9 @@ SRCS = src/game.c \
        src/game_states.c \
        src/title_state.c \
        src/game_state.c \
-       src/tiledata_titlescreen.c
+       src/tiledata_titlescreen.c \
+       src/collision_detect.c \
+       src/debug.s
 
 all: $(ROM)
 
