@@ -15,8 +15,6 @@ game_sprite_object* get_player_gso_pointer() {
   return &player;
 }
 
-void console_log(char[]);
-
 void game_state_loop(void) {
   // Long static variable name causes phasing errors
   // phase error: label location changing between passes 2 and 3
@@ -33,8 +31,6 @@ void game_state_loop(void) {
   game_sprite_object* player_gso_pointer = get_player_gso_pointer();
   clock_t current_clock = clock();
   UINT16 s_clock_buffer = 0;
-
-  console_log("sd");
 
   j = joypad();
 
@@ -83,7 +79,7 @@ void game_state_loop(void) {
   }
 
   draw_gso(player_gso_pointer, x_position_player += delta_x, y_position_player);
-  console_log(detect_collision());
+
   wait_vbl_done();
 }
 
