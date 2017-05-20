@@ -4,6 +4,7 @@
 #include "game_sprite_object.h"
 #include "level_testlevel.h"
 #include "collision_detect.h"
+#include "debug.h"
 #include <time.h>
 #include <stdio.h>
 #include <types.h>
@@ -22,15 +23,24 @@ void game_state_loop(void) {
   static UINT8 x_position_player = 64;
   static UINT8 y_position_player = 64;
   static UINT16 clock_buffer = 0;
-  BOOLEAN jump_state = FALSE;
+  static BOOLEAN jump_state = FALSE;
 
-  const g = 10;
+  const g = 1;
+  const downtempo = 20;
+  const jump_start_velocity = -10;
 
   UINT8 j, delta_x = 0;
   UINT16 delta_y = 0;
   game_sprite_object* player_gso_pointer = get_player_gso_pointer();
   clock_t current_clock = clock();
+  clock_t current_time = current_clock / CLOCKS_PER_SEC;
+  static clock_t jump_time_memo;
+  static clock_t jump_clock_memo;
+  clock_t buf;
   UINT16 s_clock_buffer = 0;
+
+  static INT16 velocityY = 0;
+  static INT8 velocityX = 0;
 
   j = joypad();
 
@@ -59,23 +69,24 @@ void game_state_loop(void) {
     delta_x = 0;
   }
 
-  if ((j & J_B) && (clock_buffer + 20 <= current_clock)) {
+  if ((j & J_B) && (jump_state == FALSE)) {
     jump_state = TRUE;
-    y_position_player -= 10;
-    clock_buffer = current_clock;
+    jump_clock_memo = current_clock;
+    velocityY = jump_start_velocity;
+    THROW_DEBUG_MSG;
   }
 
-  s_clock_buffer = current_clock - clock_buffer;
-  // if (clock_buffer + 20 <= current_clock) {
-  //   y_position_player = y_position_player - 100 * s_clock_buffer + s_clock_buffer * s_clock_buffer / 200;
-  // }
+  if (jump_state == TRUE) {
+    buf = (current_clock - jump_clock_memo) / downtempo + 1;
+    y_position_player += buf * (velocityY / 2 + 1);
+    velocityY += buf * g;
+  }
 
-  if (y_position_player >= 128) {
+  // If player on the ground
+  if (y_position_player > 128) {
     y_position_player = 128;
-    // delta_y = 0;
-  } else {
-    y_position_player += s_clock_buffer * s_clock_buffer / 200;
-    // delta_y = current_clock * current_clock / 200;
+    jump_state = FALSE;
+    velocityY = 0;
   }
 
   draw_gso(player_gso_pointer, x_position_player += delta_x, y_position_player);
