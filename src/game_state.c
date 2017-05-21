@@ -24,6 +24,18 @@ INT16 get_nearest_bottom_block(INT16 current_x_block, INT16 current_y_block) {
   return y_block / test_level_width;
 }
 
+INT16 get_nearest_top_block(INT16 current_x_block, INT16 current_y_block) {
+  INT16 y_block = current_y_block * test_level_width + current_x_block - test_level_width;
+  if (y_block < 0) {
+    return 0;
+  }
+
+  while (test_level_data[y_block] == 0) {
+    y_block -= test_level_width;
+  }
+  return y_block / test_level_width;
+}
+
 INT16 get_under_block_y(game_sprite_object *gso) {
   const INT16 pos_x = get_gso_x(gso);
   const INT16 block_x = pos_x / 8;
@@ -34,6 +46,34 @@ INT16 get_under_block_y(game_sprite_object *gso) {
   const INT16 nearest_bottom_block = get_nearest_bottom_block(block_x, block_y);
 
   return nearest_bottom_block;
+}
+
+INT16 get_upper_block_y(game_sprite_object *gso) {
+  const INT16 pos_x = get_gso_x(gso);
+  const INT16 block_x = pos_x / 8;
+
+  const INT16 pos_y = get_gso_y(gso);
+  const INT16 block_y = (pos_y / 8) - 1;
+
+  const INT16 nearest_top_block = get_nearest_top_block(block_x, block_y);
+
+  return nearest_top_block;
+}
+
+BOOLEAN check_side_collision(game_sprite_object *gso, INT16 delta) {
+  const INT8 x_tweak = 4;
+  const INT16 tweaked_delta = delta > 0 ? delta : delta - x_tweak;
+  const INT16 pos_x = get_gso_x(gso);
+  const INT16 block_x = pos_x / 8;
+
+  const INT16 pos_y = get_gso_y(gso);
+  const INT16 block_y = (pos_y / 8) - 1;
+
+  const INT16 block_x_with_delta = (pos_x + tweaked_delta) / 8;
+  const INT16 delta_block_top = block_y * test_level_width + block_x_with_delta;
+  const INT16 delta_block_bottom = block_y * test_level_width + block_x_with_delta + test_level_width;
+
+  return test_level_data[delta_block_top] != 0 || test_level_data[delta_block_bottom] != 0;
 }
 
 void game_state_loop(void) {
@@ -66,6 +106,7 @@ void game_state_loop(void) {
   static INT8 velocityX = 0;
 
   INT16 under_block_y = 0;
+  INT16 upper_block_bottom = 0;
 
   j = joypad();
 
@@ -108,6 +149,10 @@ void game_state_loop(void) {
 
   // If player on the ground
   under_block_y = get_under_block_y(player_gso_pointer) * 8;
+  upper_block_bottom = get_upper_block_y(player_gso_pointer) * 8 + 8;
+  if (y_position_player - 15 <= upper_block_bottom) {
+    velocityY = 0;
+  }
   if (y_position_player + 8 >= under_block_y) {
     y_position_player = under_block_y - 8;
     jump_state = FALSE;
@@ -115,6 +160,11 @@ void game_state_loop(void) {
   } else if (jump_state == FALSE) {
     jump_state = TRUE;
     jump_clock_memo = current_clock;
+  }
+
+  // Wall collisions
+  if (delta_x != 0 && check_side_collision(player_gso_pointer, delta_x) == TRUE) {
+    delta_x = 0;
   }
 
   draw_gso(player_gso_pointer, x_position_player += delta_x, y_position_player);
