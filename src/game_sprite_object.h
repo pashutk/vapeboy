@@ -50,3 +50,5 @@ INT16 get_gso_x(game_sprite_object *gso);
 INT16 get_gso_y(game_sprite_object *gso);
 
 INT16 get_gso_bottom(game_sprite_object *gso);
+
+UINT8 get_gso_height(game_sprite_object *gso);

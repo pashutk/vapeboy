@@ -4,6 +4,7 @@
 #include "game_sprite_object.h"
 #include "level_testlevel.h"
 #include "collision_detect.h"
+#include "smokedata.h"
 #include "debug.h"
 #include <time.h>
 #include <stdio.h>
@@ -14,6 +15,11 @@
 game_sprite_object* get_player_gso_pointer() {
   static game_sprite_object player;
   return &player;
+}
+
+game_sprite_object* get_smoke_gso_pointer() {
+  static game_sprite_object smoke;
+  return &smoke;
 }
 
 INT16 get_nearest_bottom_block(INT16 current_x_block, INT16 current_y_block) {
@@ -67,13 +73,22 @@ BOOLEAN check_side_collision(game_sprite_object *gso, INT16 delta) {
   const INT16 block_x = pos_x / 8;
 
   const INT16 pos_y = get_gso_y(gso);
-  const INT16 block_y = (pos_y / 8) - 1;
+  const INT16 block_y = (pos_y / 8);
+
+  BOOLEAN result = FALSE;
+  UINT8 i = 0;
+  INT16 delta_block;
 
   const INT16 block_x_with_delta = (pos_x + tweaked_delta) / 8;
-  const INT16 delta_block_top = block_y * test_level_width + block_x_with_delta;
-  const INT16 delta_block_bottom = block_y * test_level_width + block_x_with_delta + test_level_width;
 
-  return test_level_data[delta_block_top] != 0 || test_level_data[delta_block_bottom] != 0;
+  for (i = 0; i < get_gso_height(gso); i++) {
+    delta_block = block_y * test_level_width + block_x_with_delta - test_level_width * i;
+    if (test_level_data[delta_block] != 0) {
+      result = TRUE;
+    }
+  }
+
+  return result;
 }
 
 void game_state_loop(void) {
@@ -84,20 +99,24 @@ void game_state_loop(void) {
   static INT16 y_position_player = 64;
   static UINT16 clock_buffer = 0;
   static BOOLEAN jump_state = FALSE;
+  static BOOLEAN fire_pressed = FALSE;
+  static BOOLEAN bullet_flies = FALSE;
 
   const g = 1;
-  const downtempo = 20;
-  const jump_start_velocity = -10;
+  const downtempo = 100;
+  const jump_start_velocity = -8;
 
   INT16 delta_x;
 
   UINT8 j = 0;
   UINT16 delta_y = 0;
   game_sprite_object* player_gso_pointer = get_player_gso_pointer();
+  const game_sprite_object* bullet_gso_pointer = get_smoke_gso_pointer();
   clock_t current_clock = clock();
   clock_t current_time = current_clock / CLOCKS_PER_SEC;
   static clock_t jump_time_memo;
   static clock_t jump_clock_memo;
+  const BOOLEAN half_clock = current_clock % 2 == 1;
   clock_t buf;
   UINT16 s_clock_buffer = 0;
   UINT8 ttt = 140;
@@ -135,6 +154,25 @@ void game_state_loop(void) {
     delta_x = 0;
   }
 
+  if ((j & J_A) && fire_pressed == FALSE) {
+    fire_pressed = TRUE;
+  }
+
+  if (!(j & J_A) && fire_pressed == TRUE) {
+    fire_pressed = FALSE;
+    bullet_flies = TRUE;
+    move_gso(get_smoke_gso_pointer(), get_gso_x(player_gso_pointer) + 7, get_gso_y(player_gso_pointer) + 7);
+  }
+
+  if (bullet_flies == TRUE) {
+    move_gso(get_smoke_gso_pointer(), get_gso_x(bullet_gso_pointer) + 1, get_gso_y(bullet_gso_pointer));
+    // Wall collisions
+    if (check_side_collision(bullet_gso_pointer, 1) == TRUE) {
+      THROW_DEBUG_MSG;
+      bullet_flies = FALSE;
+    }
+  }
+
   if ((j & J_B) && (jump_state == FALSE)) {
     jump_state = TRUE;
     jump_clock_memo = current_clock;
@@ -143,8 +181,10 @@ void game_state_loop(void) {
 
   if (jump_state == TRUE) {
     buf = (current_clock - jump_clock_memo) / downtempo + 1;
-    y_position_player += buf * (velocityY / 2 + 1);
-    velocityY += buf * g;
+    y_position_player += buf * ((velocityY / 2) + 1);
+    if (half_clock == TRUE) {
+      velocityY += buf * g;
+    }
   }
 
   // If player on the ground
@@ -185,4 +225,7 @@ void game_state_prehook(void) {
 
   new_gso(get_player_gso_pointer(), stay_tile_map_width, stay_tile_map_height, &stay_tile_data, &last_free_tile);
   move_gso(get_player_gso_pointer(), 0, 50);
+
+  new_gso(get_smoke_gso_pointer(), smoke_tile_map_width, smoke_tile_map_height, &smoke_tile_data, &last_free_tile);
+  move_gso(get_smoke_gso_pointer(), 0, 0);
 }
