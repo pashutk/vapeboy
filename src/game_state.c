@@ -16,12 +16,32 @@ game_sprite_object* get_player_gso_pointer() {
   return &player;
 }
 
+INT16 get_nearest_bottom_block(INT16 current_x_block, INT16 current_y_block) {
+  INT16 y_block = current_y_block * test_level_width + current_x_block + test_level_width;
+  while (test_level_data[y_block] == 0) {
+    y_block += test_level_width;
+  }
+  return y_block / test_level_width;
+}
+
+INT16 get_under_block_y(game_sprite_object *gso) {
+  const INT16 pos_x = get_gso_x(gso);
+  const INT16 block_x = pos_x / 8;
+
+  const INT16 pos_y = get_gso_y(gso);
+  const INT16 block_y = (pos_y / 8) - 1;
+
+  const INT16 nearest_bottom_block = get_nearest_bottom_block(block_x, block_y);
+
+  return nearest_bottom_block;
+}
+
 void game_state_loop(void) {
   // Long static variable name causes phasing errors
   // phase error: label location changing between passes 2 and 3
   // So I reverted var names from 'player_position_x' to 'x_position_player'
-  static UINT8 x_position_player = 64;
-  static UINT8 y_position_player = 64;
+  static INT16 x_position_player = 64;
+  static INT16 y_position_player = 64;
   static UINT16 clock_buffer = 0;
   static BOOLEAN jump_state = FALSE;
 
@@ -29,7 +49,9 @@ void game_state_loop(void) {
   const downtempo = 20;
   const jump_start_velocity = -10;
 
-  UINT8 j, delta_x = 0;
+  INT16 delta_x;
+
+  UINT8 j = 0;
   UINT16 delta_y = 0;
   game_sprite_object* player_gso_pointer = get_player_gso_pointer();
   clock_t current_clock = clock();
@@ -38,9 +60,12 @@ void game_state_loop(void) {
   static clock_t jump_clock_memo;
   clock_t buf;
   UINT16 s_clock_buffer = 0;
+  UINT8 ttt = 140;
 
   static INT16 velocityY = 0;
   static INT8 velocityX = 0;
+
+  INT16 under_block_y = 0;
 
   j = joypad();
 
@@ -73,7 +98,6 @@ void game_state_loop(void) {
     jump_state = TRUE;
     jump_clock_memo = current_clock;
     velocityY = jump_start_velocity;
-    THROW_DEBUG_MSG;
   }
 
   if (jump_state == TRUE) {
@@ -83,10 +107,13 @@ void game_state_loop(void) {
   }
 
   // If player on the ground
-  if (y_position_player > 128) {
-    y_position_player = 128;
+  under_block_y = get_under_block_y(player_gso_pointer) * 8;
+  if (y_position_player + 8 >= under_block_y) {
+    y_position_player = under_block_y - 8;
     jump_state = FALSE;
     velocityY = 0;
+  } else {
+    jump_state = TRUE;
   }
 
   draw_gso(player_gso_pointer, x_position_player += delta_x, y_position_player);
