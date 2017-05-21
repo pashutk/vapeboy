@@ -112,8 +112,9 @@ void game_state_loop(void) {
     y_position_player = under_block_y - 8;
     jump_state = FALSE;
     velocityY = 0;
-  } else {
+  } else if (jump_state == FALSE) {
     jump_state = TRUE;
+    jump_clock_memo = current_clock;
   }
 
   draw_gso(player_gso_pointer, x_position_player += delta_x, y_position_player);
