@@ -3,6 +3,7 @@
 #include "tiledata_run.h"
 #include "tiledata_stayvape.h"
 #include "tiledata_vapeboyrunvape.h"
+#include "debug.h"
 #include <gb/gb.h>
 #include <types.h>
 #include <stdio.h>
@@ -38,6 +39,8 @@ void new_gso(game_sprite_object *gso_pointer,
 
   gso_pointer->width = width;
   gso_pointer->height = height;
+  gso_pointer->x_position = 0;
+  gso_pointer->y_position = 0;
   gso_pointer->tile_data_pointer = tile_data_pointer;
   gso_pointer->first_tile_num = *last_free_tile_pointer;
   gso_pointer->last_free_tile_pointer = last_free_tile_pointer;
@@ -46,10 +49,16 @@ void new_gso(game_sprite_object *gso_pointer,
 }
 
 void move_gso(game_sprite_object *gso,
-              UINT8              x,
-              UINT8              y) {
+              INT16              x,
+              INT16              y) {
   UINT8 i, j, c;
   c = gso->first_tile_num;
+  
+  // TODO wtf
+  gso->x_position = x;
+  gso->x_position = x;
+  gso->y_position = y;
+  gso->y_position = y;
 
   for (i = 0; i < gso->height; ++i) {
     if (gso->is_flipped) {
@@ -65,8 +74,8 @@ void move_gso(game_sprite_object *gso,
 }
 
 void draw_gso(game_sprite_object *gso,
-              UINT8              x,
-              UINT8              y) {
+              INT16              x,
+              INT16              y) {
   static UINT8 run_counter = 7;
   static UINT8 downtempo = 0;
 
@@ -117,4 +126,16 @@ void set_gso_horizontal_flip(game_sprite_object *gso, BOOLEAN is_flipped) {
   for (i = 0; i < gso_size; i++) {
     set_sprite_prop(i, sprite_prop);
   }
+}
+
+INT16 get_gso_x(game_sprite_object *gso) {
+  return gso->x_position;
+}
+
+INT16 get_gso_y(game_sprite_object *gso) {
+  return gso->y_position;
+}
+
+INT16 get_gso_bottom(game_sprite_object *gso) {
+  return gso->y_position + gso->height * SPRITE_HEIGHT;
 }
