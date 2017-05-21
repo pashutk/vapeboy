@@ -167,7 +167,9 @@ void game_state_loop(void) {
     delta_x = 0;
   }
 
-  draw_gso(player_gso_pointer, x_position_player += delta_x, y_position_player);
+  x_position_player += delta_x;
+
+  draw_gso(player_gso_pointer, x_position_player, y_position_player);
 
   wait_vbl_done();
 }

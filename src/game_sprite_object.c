@@ -78,6 +78,7 @@ void draw_gso(game_sprite_object *gso,
               INT16              y) {
   static UINT8 run_counter = 7;
   static UINT8 downtempo = 0;
+  const BOOLEAN position_changed = get_gso_x(gso) != x || get_gso_y(gso) != y;
 
   if (run_counter == 8) {
     run_counter = 0;
@@ -105,7 +106,9 @@ void draw_gso(game_sprite_object *gso,
     run_counter = 7;
   }
 
-  move_gso(gso, x, y);
+  if (position_changed == TRUE) {
+    move_gso(gso, x, y);
+  }
 }
 
 /** @return previous gso state */
